@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+body {
+    background-color: #87CEEB;
+    background-image: url("{{ url_for('static', filename='pig_logo.png') }}");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: 300px 300px;
+}
+
+.glass-green{
+    background: rgba(25,135,84,0.35);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+.glass-red{
+    background: rgba(220,53,69,0.35);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+.glass-blue{
+    background: rgba(13,110,253,0.35);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+.glass-yellow{
+    background: rgba(255,193,7,0.35);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+.glass-dark{
+    background: rgba(0,0,0,0.30);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.20);
+}
+
+.table-dark{
+    background: rgba(0,0,0,0.25) !important;
+    backdrop-filter: blur(6px);
+}
+
+.table-dark th,
+.table-dark td{
+    background: transparent !important;
+}
+
+.welcome-msg {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    z-index: 1000;
+}
+</style>
+
+<div class="welcome-msg">
+{% if current_user.role == "admin" %}
+Welcome Mr. {{ current_user.name }} – C.E.O
+{% else %}
+Welcome {{ current_user.name }} – Worker
+{% endif %}
+</div>
+
+<div class="text-center mb-4">
+<img src="{{ url_for('static', filename='pig_logo.png') }}" alt="Pig People Logo" style="width:90px; margin-bottom:10px;">
+<h2 class="mb-2">PIG PEOPLE</h2>
+<p style="color:#0d6efd; font-weight:bold; font-size:18px;">Raising Quality, Delivering Trust</p>
+</div>
+
+<div class="text-center mb-3">
+<a href="{{ url_for('main.breeding') }}" class="btn btn-dark m-1">🐖 Breeding Records</a>
+<a href="#pig_inventory" class="btn btn-info m-1">⚖ Weight Records</a>
+<a href="#pig_inventory" class="btn btn-warning m-1">💉 Vaccination Records</a>
+</div>
+
+<div class="row mb-4">
+<div class="col-md-3">
+<div class="card glass-green text-white">
+<div class="card-body text-center">
+<h5>Available Pigs</h5>
+<h2>{{ available }}</h2>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card glass-red text-white">
+<div class="card-body text-center">
+<h5>Sold Pigs</h5>
+<h2>{{ sold }}</h2>
+</div>
+</div>
+</div>
+</div>
+
+<hr>
+
+<h3>📄 Add Breeding Record</h3>
+
+<form method="POST" action="{{ url_for('main.breeding') }}" class="row g-3">
+<div class="col-md-4">
+<label>Sow</label>
+<select name="sow_id" class="form-control" required>
+{% for pig in pigs %}
+{% if pig.status == "Available" %}
+<option value="{{ pig.tag }}">{{ pig.tag }} - {{ pig.breed }}</option>
+{% endif %}
+{% endfor %}
+</select>
+</div>
+
+<div class="col-md-4">
+<label>Boar</label>
+<select name="boar_id" class="form-control" required>
+{% for pig in pigs %}
+{% if pig.status == "Available" %}
+<option value="{{ pig.tag }}">{{ pig.tag }} - {{ pig.breed }}</option>
+{% endif %}
+{% endfor %}
+</select>
+</div>
+
+<div class="col-md-2">
+<label>Mating Date</label>
+<input type="date" name="mating_date" class="form-control" required>
+</div>
+
+<div class="col-md-2">
+<label>Expected Birth</label>
+<input type="date" name="expected_birth" class="form-control" required>
+</div>
+
+<div class="col-md-12 mt-2">
+<button class="btn btn-success w-100">Record Breeding</button>
+</div>
+</form>
+
+<hr>
+
+<h3>📦 Breeding Records</h3>
+
+<table class="table table-dark table-striped">
+<tr>
+<th>Sow</th>
+<th>Boar</th>
+<th>Mating Date</th>
+<th>Expected Birth</th>
+</tr>
+
+{% for b in breedings %}
+<tr>
+<td>{{ b.sow_id }}</td>
+<td>{{ b.boar_id }}</td>
+<td>{{ b.mating_date }}</td>
+<td>{{ b.expected_birth }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

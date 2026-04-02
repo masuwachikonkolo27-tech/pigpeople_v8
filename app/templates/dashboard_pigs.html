@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>📦 Pig Inventory</h3>
+<a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary mb-3">⬅ Back to Dashboard</a>
+
+<table class="table table-dark table-striped">
+<tr>
+<th>Photo</th>
+<th>Tag</th>
+<th>Breed</th>
+<th>Weight</th>
+<th>Age</th>
+<th>Status</th>
+<th>Entered By</th>
+<th>Date</th>
+<th>Time</th>
+<th>Actions</th>
+</tr>
+{% for pig in pigs %}
+<tr>
+<td>{% if pig.photo %}<img src="{{ url_for('static', filename='pig_images/' + pig.photo) }}" width="70">{% else %}No Photo{% endif %}</td>
+<td>{{ pig.tag }}</td>
+<td>{{ pig.breed }}</td>
+<td>{{ pig.weight }}</td>
+<td>{{ pig.age }}</td>
+<td>{{ pig.status }}</td>
+<td>{{ pig.entered_by }}</td>
+<td>{{ pig.date }}</td>
+<td>{{ pig.time }}</td>
+<td>
+<a href="{{ url_for('main.pig_weight', pig_id=pig.tag) }}" class="btn btn-sm btn-info">⚖</a>
+<a href="{{ url_for('main.pig_vaccination', pig_id=pig.tag) }}" class="btn btn-sm btn-warning">💉</a>
+<a href="{{ url_for('main.edit_pig', id=pig.id) }}" class="btn btn-sm btn-secondary">Edit</a>
+{% if current_user.role == "admin" %}
+<a href="/delete_pig/{{ pig.id }}" class="btn btn-sm btn-danger">Delete</a>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,14 @@
+<form method="POST">
+    Tag: <input type="text" name="tag" value="{{ pig.tag }}"><br>
+    Breed: <input type="text" name="breed" value="{{ pig.breed }}"><br>
+    Weight: <input type="text" name="weight" value="{{ pig.weight }}"><br>
+    Age: <input type="text" name="age" value="{{ pig.age }}"><br>
+
+    Status:
+    <select name="status">
+        <option value="Available" {% if pig.status=="Available" %}selected{% endif %}>Available</option>
+        <option value="Sold" {% if pig.status=="Sold" %}selected{% endif %}>Sold</option>
+    </select><br>
+
+    <button type="submit">Update Pig</button>
+</form>

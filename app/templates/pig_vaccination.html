@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h3 class="mb-4">💉 Vaccination Records — {{ pig.tag }}</h3>
+
+<!-- ADD VACCINATION -->
+<form method="POST" class="row g-3 mb-4">
+
+<div class="col-md-3">
+<input name="vaccine" class="form-control" placeholder="Vaccine Name" required>
+</div>
+
+<div class="col-md-3">
+<input type="date" name="date" class="form-control" required>
+</div>
+
+<div class="col-md-3">
+<input type="date" name="next_due" class="form-control" required>
+</div>
+
+<div class="col-md-3">
+<button class="btn btn-warning w-100">Add Vaccine</button>
+</div>
+
+</form>
+
+<hr>
+
+<h4>📋 Vaccination History</h4>
+
+<table class="table table-dark table-striped">
+<tr>
+<th>Vaccine</th>
+<th>Date Given</th>
+<th>Next Due</th>
+</tr>
+
+{% for v in vaccinations %}
+<tr>
+<td>{{ v.vaccine }}</td>
+<td>{{ v.date.strftime("%Y-%m-%d") if v.date else "" }}</td>
+<td>{{ v.next_due.strftime("%Y-%m-%d") if v.next_due else "" }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<a href="/dashboard" class="btn btn-secondary mt-3">⬅ Back to Dashboard</a>
+
+</div>
+
+{% endblock %}

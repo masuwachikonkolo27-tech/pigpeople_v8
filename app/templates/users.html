@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Users</h2>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-info">
+      {% for msg in messages %}
+        <p>{{ msg }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{% if current_user.role == "admin" %}
+<hr>
+<h4>Create User</h4>
+
+<form method="POST" action="{{ url_for('main.add_user') }}" class="row g-3 mb-4">
+  <div class="col-md-4">
+    <input name="name" class="form-control" placeholder="Full Name" required>
+  </div>
+  <div class="col-md-4">
+    <input name="username" class="form-control" placeholder="Username" required>
+  </div>
+  <div class="col-md-4">
+    <input type="password" name="password" class="form-control" placeholder="Password" required>
+  </div>
+  <div class="col-md-4">
+    <select name="role" class="form-control" required>
+      <option value="worker" selected>Worker</option>
+      <option value="admin">Admin</option>
+    </select>
+  </div>
+  <div class="col-md-12 mt-2">
+    <button class="btn btn-success w-100">Add User</button>
+  </div>
+</form>
+{% endif %}
+
+<hr>
+
+<h4>Existing Users</h4>
+<table class="table table-dark table-striped">
+  <tr>
+    <th>Name</th>
+    <th>Username</th>
+    <th>Role</th>
+    <th>Action</th>
+  </tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.name }}</td>
+    <td>{{ u.username }}</td>
+    <td>{{ u.role }}</td>
+    <td>
+      {% if current_user.role == "admin" and u.role != "admin" %}
+      <a href="{{ url_for('main.delete_user', user_id=u.id) }}" class="btn btn-danger btn-sm">Delete</a>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

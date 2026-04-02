@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>💸 Expense Records</h3>
+<a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary mb-3">⬅ Back to Dashboard</a>
+
+<table class="table table-dark table-striped">
+<tr>
+<th>Description</th>
+<th>Amount</th>
+<th>Entered By</th>
+<th>Date</th>
+<th>Time</th>
+<th>Actions</th>
+</tr>
+{% for expense in expenses %}
+<tr>
+<td>{{ expense.description }}</td>
+<td>ZMW {{ "{:,.2f}".format(expense.amount) }}</td>
+<td>{{ expense.entered_by }}</td>
+<td>{{ expense.date }}</td>
+<td>{{ expense.time }}</td>
+<td>
+<a href="{{ url_for('main.edit_expense', id=expense.id) }}" class="btn btn-sm btn-primary">Edit</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h3 class="mb-4">⚖ Pig Weight Tracking — {{ pig_id }}</h3>
+
+<!-- ADD WEIGHT -->
+
+<form method="POST" class="row g-3 mb-4">
+
+<div class="col-md-4">
+<input type="number" step="0.1" name="weight" class="form-control" placeholder="Weight (kg)" required>
+</div>
+
+<div class="col-md-4">
+<input type="date" name="date" class="form-control" required>
+</div>
+
+<div class="col-md-4">
+<button class="btn btn-info w-100">Add Weight</button>
+</div>
+
+</form>
+
+<hr>
+
+<h4>📊 Weight History</h4>
+
+<table class="table table-dark table-striped">
+
+<tr>
+<th>Date</th>
+<th>Weight (kg)</th>
+</tr>
+
+{% for w in weights %}
+
+<tr>
+<td>{{ w.date }}</td>
+<td>{{ w.weight }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+<a href="/dashboard" class="btn btn-secondary mt-3">⬅ Back to Dashboard</a>
+
+</div>
+
+{% endblock %}

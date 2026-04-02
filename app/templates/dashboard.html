@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+body {
+    background-color: #87CEEB;
+    background-image: url("{{ url_for('static', filename='pig_logo.png') }}");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: 300px 300px;
+}
+
+.glass-green{
+    background: rgba(25,135,84,0.35);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+.glass-red{
+    background: rgba(220,53,69,0.35);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+.glass-blue{
+    background: rgba(13,110,253,0.35);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+.glass-yellow{
+    background: rgba(255,193,7,0.35);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+.glass-dark{
+    background: rgba(0,0,0,0.30);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.20);
+}
+
+.welcome-msg {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    z-index: 1000;
+}
+
+.profit-figure {
+    font-size: 24px;
+    font-weight: bold;
+    color: #19a74a;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.card-hover:hover {
+    transform: scale(1.05);
+    transition: 0.3s;
+}
+</style>
+
+<div class="welcome-msg">
+{% if current_user.role == "admin" %}
+Welcome Mr. {{ current_user.name }} – C.E.O
+{% else %}
+Welcome {{ current_user.name }} – employee
+{% endif %}
+</div>
+
+<div class="text-center mb-4">
+<img src="{{ url_for('static', filename='pig_logo.png') }}" style="width:90px;">
+<h2>PIG PEOPLE</h2>
+<p style="color:#0d6efd; font-weight:bold;">Raising Quality, Delivering Trust</p>
+</div>
+
+<div class="text-center mb-3">
+<a href="{{ url_for('main.breeding') }}" class="btn btn-dark m-1">🐖 Breeding Records</a>
+<a href="#pig_inventory" class="btn btn-info m-1">⚖ Weight Records</a>
+<a href="#pig_inventory" class="btn btn-warning m-1">💉 Vaccination Records</a>
+</div>
+
+<div class="row mb-4">
+
+  <!-- Pig Inventory -->
+  <div class="col-md-4 mb-3">
+    <a href="{{ url_for('main.dashboard_pigs') }}" style="text-decoration:none;">
+      <div class="card glass-blue text-white text-center p-4 card-hover">
+        <h5> Pig Inventory</h5>
+        <p>Available: {{ available }}<br>Sold: {{ sold }}</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Sales Records -->
+  <div class="col-md-4 mb-3">
+    <a href="{{ url_for('main.dashboard_sales') }}" style="text-decoration:none;">
+      <div class="card glass-green text-white text-center p-4 card-hover">
+        <h5> Sales Records</h5>
+        <p>Total Sales: ZMW {{ "{:,.2f}".format(total_sales) }}</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Expense Records -->
+  <div class="col-md-4 mb-3">
+    <a href="{{ url_for('main.dashboard_expenses') }}" style="text-decoration:none;">
+      <div class="card glass-yellow text-dark text-center p-4 card-hover">
+        <h5> Expense Records</h5>
+        <p>Total Expenses: ZMW {{ "{:,.2f}".format(total_expenses) }}</p>
+      </div>
+    </a>
+  </div>
+
+</div>
+
+{% if current_user.role == "admin" %}
+<!-- ================= Profit & Loss Chart ================= -->
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card glass-dark p-4">
+      <h5 class="text-white text-center mb-3">📊 Profit & Loss Overview</h5>
+      <canvas id="profitChart" height="250"></canvas>
+      <div class="profit-figure">
+        Profit: ZMW {{ "{:,.2f}".format(total_sales - total_expenses) }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('profitChart').getContext('2d');
+const totalSales = {{ total_sales }};
+const totalExpenses = {{ total_expenses }};
+const profit = totalSales - totalExpenses;
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Total Sales', 'Total Expenses', 'Profit'],
+        datasets: [{
+            label: 'ZMW',
+            data: [totalSales, totalExpenses, profit],
+            backgroundColor: [
+                'rgba(13,110,253,0.7)',
+                'rgba(220,53,69,0.7)',
+                'rgba(25,135,84,0.7)'
+            ],
+            borderColor: [
+                'rgba(13,110,253,1)',
+                'rgba(220,53,69,1)',
+                'rgba(25,135,84,1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
+{% endif %}
+
+<!-- ================= Add Pig / Sale / Expense Buttons ================= -->
+<hr>
+
+<!-- Add Pig -->
+<button class="btn btn-success mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#addPigForm" aria-expanded="false" aria-controls="addPigForm">
+  🐖 Add Pig
+</button>
+<div class="collapse" id="addPigForm">
+  <div class="card card-body mb-3">
+    <form method="POST" action="/add_pig" enctype="multipart/form-data" class="row g-3">
+      <input name="tag" class="form-control" placeholder="Tag" required>
+      <input name="breed" class="form-control" placeholder="Breed" required>
+      <input name="weight" class="form-control" placeholder="Weight" required>
+      <input name="age" class="form-control" placeholder="Age" required>
+      <input type="file" name="photo" class="form-control">
+      <button class="btn btn-success">Add Pig</button>
+    </form>
+  </div>
+</div>
+
+<!-- Add Sale -->
+<button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#addSaleForm" aria-expanded="false" aria-controls="addSaleForm">
+  💰 Add Sale
+</button>
+<div class="collapse" id="addSaleForm">
+  <div class="card card-body mb-3">
+    <form method="POST" action="/add_sale" class="row g-3">
+      <select name="pig_id" class="form-control">
+        {% for pig in pigs %}
+        {% if pig.status == "Available" %}
+        <option value="{{ pig.id }}">{{ pig.tag }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+      <input name="price" class="form-control" placeholder="Price" required>
+      <button class="btn btn-primary">Record Sale</button>
+    </form>
+  </div>
+</div>
+
+<!-- Add Expense -->
+<button class="btn btn-warning mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#addExpenseForm" aria-expanded="false" aria-controls="addExpenseForm">
+  💸 Add Expense
+</button>
+<div class="collapse" id="addExpenseForm">
+  <div class="card card-body mb-3">
+    <form method="POST" action="/add_expense" class="row g-3">
+      <input name="description" class="form-control" placeholder="Description" required>
+      <input name="amount" class="form-control" placeholder="Amount" required>
+      <button class="btn btn-warning">Add Expense</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= Tables for Expense, Sales, Pig Inventory ================= -->
+
+{% endblock %}
